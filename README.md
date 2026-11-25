@@ -94,7 +94,14 @@ gnokey query vm/qeval -remote https://rpc.onyx.testnets.gno.land:443 \
 
 ## Testnet evidence
 
-TESTNET_EVIDENCE
+Onyx testnet (`onyx-1`), deployer `g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj` (a testnet-only key):
+
+| Step | Height | Tx hash |
+|---|---:|---|
+| Register namespace `nym-receipts001` (`r/sys/namereg/v0.Register`) | 1405760 | `twOI6+tAYGXqyUx1eQTQfksWOoRR9b0Z7xkJGTHGY48=` |
+| Submit realm (`addpkg gno.land/r/nym-receipts001/receipts`) | 1406518 | `j/U9YKzJm2bq+vM+K2WWe2Mt2mJbrXVv5OjqsdYhRF4=` |
+
+Lifecycle transactions (seal, reveal, verdicts) are added here once the package is enabled.
 
 ## Develop
 
