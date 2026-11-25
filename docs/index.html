@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Receipts · offline sealer</title>
+<meta name="description" content="Compute a Receipts commitment in your browser. Nothing you type leaves this page.">
+<style>
+  :root { --bg:#0f1115; --card:#171a21; --ink:#e8e6e3; --mute:#9aa0aa; --acc:#f2b84b; --ok:#4bd18b; --bad:#ff6b6b; }
+  * { box-sizing:border-box }
+  body { margin:0; font:16px/1.5 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--bg); color:var(--ink) }
+  main { max-width:760px; margin:0 auto; padding:32px 20px 64px }
+  h1 { font-size:34px; margin:0 0 4px } h1 span { color:var(--acc) }
+  .lead { color:var(--mute); margin:0 0 24px }
+  .card { background:var(--card); border:1px solid #262a33; border-radius:14px; padding:20px; margin:16px 0 }
+  label { display:block; font-weight:600; margin:12px 0 6px }
+  textarea, input { width:100%; background:#0c0e12; color:var(--ink); border:1px solid #2c313b; border-radius:10px; padding:10px 12px; font:inherit }
+  textarea { min-height:96px; resize:vertical }
+  .mono { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:14px; word-break:break-all }
+  .row { display:flex; gap:8px } .row input { flex:1 }
+  button, a.btn { background:var(--acc); color:#1a1300; border:0; border-radius:10px; padding:10px 14px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-block }
+  button.ghost, a.ghost { background:transparent; color:var(--ink); border:1px solid #3a404c }
+  .out { margin-top:14px; padding:12px; border-radius:10px; background:#0c0e12; border:1px dashed #3a404c; min-height:48px }
+  .hint { color:var(--mute); font-size:14px }
+  .ok { color:var(--ok) } .bad { color:var(--bad) }
+  .actions { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px }
+  code { background:#0c0e12; padding:2px 6px; border-radius:6px }
+</style>
+</head>
+<body>
+<main>
+  <h1>Receipts <span>sealer</span></h1>
+  <p class="lead">Call it now, prove it later. This page hashes your call in your browser with WebCrypto. Nothing you type is sent anywhere.</p>
+
+  <div class="card">
+    <label for="call">1. Your call (exact text, it must match byte for byte when you reveal)</label>
+    <textarea id="call" placeholder="e.g. GNOT trades above $1 before June 1, 2027"></textarea>
+
+    <label for="salt">2. Salt (random, 8 to 64 characters, keep it secret until you reveal)</label>
+    <div class="row"><input id="salt" class="mono"><button class="ghost" id="newsalt" type="button">New salt</button></div>
+
+    <label>3. Commitment: <code>sha256(salt + "|" + call)</code></label>
+    <div class="out mono" id="commit">Type your call to see the commitment.</div>
+
+    <div class="actions">
+      <button id="copy" type="button">Copy commitment</button>
+      <button id="save" class="ghost" type="button">Save receipt file (call + salt)</button>
+      <a class="btn ghost" href="https://onyx.testnets.gno.land/r/nym-receipts001/receipts" target="_blank" rel="noopener">4. Seal it on Gno.land ↗</a>
+    </div>
+    <p class="hint">Save the receipt file. Without the exact call and salt you cannot reveal, and an unrevealed call is marked <b>ducked</b> after its deadline.</p>
+  </div>
+
+  <div class="card">
+    <label>Check someone's receipt</label>
+    <p class="hint">Paste a revealed call, its salt and the sealed commitment to check them yourself, without trusting the realm.</p>
+    <textarea id="vcall" placeholder="Revealed call text"></textarea>
+    <label for="vsalt">Salt</label><input id="vsalt" class="mono">
+    <label for="vcommit">Commitment</label><input id="vcommit" class="mono" placeholder="64 hex characters">
+    <div class="out" id="vout">Fill all three fields.</div>
+  </div>
+
+  <p class="hint">Command-line equivalent: <code>printf '%s|%s' "$SALT" "$CALL" | sha256sum</code> · Source: <a style="color:var(--acc)" href="https://github.com/666Crypro/receipts">github.com/666Crypro/receipts</a></p>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const enc = new TextEncoder();
+async function commit(call, salt) {
+  const buf = await crypto.subtle.digest('SHA-256', enc.encode(salt + '|' + call));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+function newSalt() {
+  const a = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const r = crypto.getRandomValues(new Uint8Array(16));
+  $('salt').value = [...r].map(x => a[x % a.length]).join('');
+  update();
+}
+async function update() {
+  const call = $('call').value, salt = $('salt').value;
+  const out = $('commit');
+  if (!call) { out.textContent = 'Type your call to see the commitment.'; out.className = 'out mono'; return; }
+  if (salt.length < 8 || salt.length > 64) { out.textContent = 'Salt must be 8 to 64 characters.'; out.className = 'out mono bad'; return; }
+  out.textContent = await commit(call, salt); out.className = 'out mono ok';
+}
+async function verify() {
+  const c = $('vcall').value, s = $('vsalt').value, h = $('vcommit').value.trim().toLowerCase();
+  const out = $('vout');
+  if (!c || !s || !h) { out.textContent = 'Fill all three fields.'; out.className = 'out'; return; }
+  const got = await commit(c, s);
+  if (got === h) { out.textContent = '✓ Match. This call and salt produce that commitment.'; out.className = 'out ok'; }
+  else { out.innerHTML = '✗ No match. Computed <span class="mono">' + got + '</span>'; out.className = 'out bad'; }
+}
+$('call').addEventListener('input', update);
+$('salt').addEventListener('input', update);
+$('newsalt').addEventListener('click', newSalt);
+['vcall','vsalt','vcommit'].forEach(id => $(id).addEventListener('input', verify));
+$('copy').addEventListener('click', async () => {
+  const t = $('commit').textContent; if (!/^[0-9a-f]{64}$/.test(t)) return;
+  await navigator.clipboard.writeText(t); $('copy').textContent = 'Copied ✓'; setTimeout(() => $('copy').textContent = 'Copy commitment', 1500);
+});
+$('save').addEventListener('click', async () => {
+  const call = $('call').value, salt = $('salt').value; if (!call) return;
+  const h = await commit(call, salt);
+  const body = 'RECEIPTS - keep this file private until you reveal\n\ncommitment: ' + h + '\nsalt: ' + salt + '\ncall:\n' + call + '\n';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([body], {type: 'text/plain'}));
+  a.download = 'receipt-' + h.slice(0, 8) + '.txt'; a.click();
+});
+newSalt();
+</script>
+</body>
+</html>
