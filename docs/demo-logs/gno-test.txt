@@ -1,0 +1,17 @@
+$ gno test -v .
+=== RUN   TestCommitKnownVector
+--- PASS: TestCommitKnownVector (0.00s)
+--- GAS:  788951
+=== RUN   TestFullLifecycle
+--- PASS: TestFullLifecycle (0.01s)
+--- GAS:  20083939
+=== RUN   TestValidation
+--- PASS: TestValidation (0.00s)
+--- GAS:  3405840
+=== RUN   TestDuckedAfterDeadline
+--- PASS: TestDuckedAfterDeadline (0.00s)
+--- GAS:  17019943
+=== RUN   TestRenderUnknown
+--- PASS: TestRenderUnknown (0.00s)
+--- GAS:  3434487
+ok      . 	1.32s

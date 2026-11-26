@@ -40,7 +40,7 @@ case "${1:-}" in
     hash "$2" "$3" ;;
   seal)
     topic="$2"; call="$3"; days="$4"
-    salt="$(LC_ALL=C tr -dc 'A-HJ-NP-Za-km-z2-9' </dev/urandom | head -c 16)"
+    salt="$(openssl rand -hex 8)"
     commitment="$(hash "$call" "$salt")"
     mkdir -p "$RECEIPTS_DIR"; chmod 700 "$RECEIPTS_DIR"
     file="$RECEIPTS_DIR/receipt-${commitment:0:8}.txt"

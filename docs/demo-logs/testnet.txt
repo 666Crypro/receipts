@@ -1,0 +1,99 @@
+$ scripts/receipts.sh seal Will Gnome Tavern get 100+ BUIDLs? Yes. Gnome Tavern closes with more than 100 BUIDLs submitted. 30
+commitment 0e9130488266f454aa1f9640931b7a0c6eeb3d5c52d20f2515856809c48949b9  (call + salt saved to /workspace/receipts-gno/.secrets/receipts/receipt-0e913048.txt, keep it private)
+OK!
+HEIGHT:     1435367
+EVENTS:     [{"type":"Sealed","attrs":[{"key":"id","value":"1"},{"key":"author","value":"g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj"},{"key":"commitment","value":"0e9130488266f454aa1f9640931b7a0c6eeb3d5c52d20f2515856809c48949b9"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":7023,"fee_delta":{"denom":"ugnot","amount":702300},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    uJA8oekgen/SKctQ79dWydzNsebxDE3WrKvxfcj9deQ=
+
+$ scripts/receipts.sh seal BTC close on Dec 31, 2026 BTC closes 2026 above $150k. 37
+commitment e12a8a2c0aa862fc0f81cbc3444ac5b069708d735f2577e706290c4dc593f8a0  (call + salt saved to /workspace/receipts-gno/.secrets/receipts/receipt-e12a8a2c.txt, keep it private)
+OK!
+HEIGHT:     1435368
+EVENTS:     [{"type":"Sealed","attrs":[{"key":"id","value":"2"},{"key":"author","value":"g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj"},{"key":"commitment","value":"e12a8a2c0aa862fc0f81cbc3444ac5b069708d735f2577e706290c4dc593f8a0"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":5863,"fee_delta":{"denom":"ugnot","amount":586300},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    Zf3MiRiIZsybizob/Mau/nBMddK1NQ0qqgD4p7nPMio=
+
+$ scripts/receipts.sh seal A call I will not reveal (ducked demo) This call is never revealed, so it shows as ducked after one day. 1
+commitment f1384a3d94d89f0baf620cd779c754e0302187fa03ba463ab79ab3396d71e513  (call + salt saved to /workspace/receipts-gno/.secrets/receipts/receipt-f1384a3d.txt, keep it private)
+OK!
+HEIGHT:     1435369
+EVENTS:     [{"type":"Sealed","attrs":[{"key":"id","value":"3"},{"key":"author","value":"g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj"},{"key":"commitment","value":"f1384a3d94d89f0baf620cd779c754e0302187fa03ba463ab79ab3396d71e513"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":5856,"fee_delta":{"denom":"ugnot","amount":585600},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    OsJPt5NEmkLffOBtX0wbRKyR0ZxFulqr5Ezm/abTIMg=
+
+$ scripts/receipts.sh reveal 1 .secrets/wrong.txt
+re-hash check: 8377211c62e5e24f46efca1562478dd89517caf22236614f1e1654d40d939716
+HEIGHT:     0
+EVENTS:     []
+TX HASH:    
+--= Error =--
+Error: prediction and salt do not match the sealed commitment
+    0  gno/tm2/pkg/errors/errors.go:103 - deliver transaction failed: log:msg:0,success:false,log:--= Error =--
+Error: errors.FmtError{format:"prediction and salt do not match the sealed commitment", args:[]interface {}(nil)}
+    0  /gnoroot/tm2/pkg/errors/errors.go:103 - VM panic: prediction and salt do not match the sealed commitment
+panic: prediction and salt do not match the sealed commitment
+--= /Error =--
+
+$ scripts/receipts.sh reveal 1 .secrets/receipts/receipt-0e913048.txt
+re-hash check: 0e9130488266f454aa1f9640931b7a0c6eeb3d5c52d20f2515856809c48949b9
+OK!
+HEIGHT:     1435370
+EVENTS:     [{"type":"Revealed","attrs":[{"key":"id","value":"1"},{"key":"author","value":"g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj"},{"key":"onTime","value":"true"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":270,"fee_delta":{"denom":"ugnot","amount":27000},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    jQsGSqSVTL4RoEnds3uA73lPnyzTdzeyy76n8tIjmRc=
+
+$ scripts/receipts.sh verdict 1 held
+HEIGHT:     0
+EVENTS:     []
+TX HASH:    
+--= Error =--
+Error: authors cannot judge their own call
+    0  gno/tm2/pkg/errors/errors.go:103 - deliver transaction failed: log:msg:0,success:false,log:--= Error =--
+Error: errors.FmtError{format:"authors cannot judge their own call", args:[]interface {}(nil)}
+--= /Error =--
+
+$ scripts/receipts.sh verdict 1 held
+OK!
+HEIGHT:     1435371
+EVENTS:     [{"type":"Verdict","attrs":[{"key":"id","value":"1"},{"key":"voter","value":"g1xhuxxzda38ad4zv34tyrmzrkc5344t4fq2ykh9"},{"key":"verdict","value":"held"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":1065,"fee_delta":{"denom":"ugnot","amount":106500},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    90dviVTB4J47bjAnmO9gQH1ynw3pP8ez+0qVebJHU1s=
+
+$ scripts/receipts.sh verdict 1 held
+OK!
+HEIGHT:     1435372
+EVENTS:     [{"type":"Verdict","attrs":[{"key":"id","value":"1"},{"key":"voter","value":"g17sr5m0zx6ghu6maplkh9ekursehaqsdrqaucw7"},{"key":"verdict","value":"held"}],"pkg_path":"gno.land/r/nym-receipts001/receipts"},{"bytes_delta":2061,"fee_delta":{"denom":"ugnot","amount":206100},"pkg_path":"gno.land/r/nym-receipts001/receipts"}]
+TX HASH:    zVf/Qn8+7V5rV2bRw1glW7/s9VfEF44TSSh+F3juPso=
+
+== render call/1
+[Receipts](/r/nym-receipts001/receipts) / Call #1
+
+# Will Gnome Tavern get 100\+ BUIDLs?
+
+**✅ revealed, held** · by [g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj](/r/nym-receipts001/receipts:u/g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj)
+
+| Receipt | |
+|---|---|
+| Sealed | block 1435367 · 2026-11-26 21:17 UTC |
+| Reveal by | 2026-12-26 21:17 UTC |
+| Revealed | block 1435370 · 2026-11-26 21:18 UTC |
+| Commitment | `0e9130488266f454aa1f9640931b7a0c6eeb3d5c52d20f2515856809c48949b9` |
+
+## The call
+
+
+> Yes. Gnome Tavern closes with more than 100 BUIDLs submitted.
+
+
+
+> [!SUCCESS] Verified on-chain
+> `sha256(salt + "|" + call)` equals the commitment sealed at block 1435367, 3 blocks before the reveal. Salt: `79fb18037ddf9dc2`
+
+## Did it hold?
+
+Held **2** · Missed **0** · crowd says **held**
+
+Anyone except the author can give one verdict (and change it later).
+
+<gno-form exec="Verdict">
+<gno-input name="id" type="number" value="1" placeholder="Call ID" readonly="true" />
+<gno-input name="verdict" type="radio" value="held" placeholder="it came true" />
+<gno-input name="verdict" type="radio" value="missed" placeholder="it did not" />
+</gno-form>
+

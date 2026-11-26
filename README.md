@@ -9,7 +9,7 @@ Built for the Gnome Tavern hackathon. Live on the Gno.land testnet (Onyx, `onyx-
 | Live app (gnoweb) | https://onyx.testnets.gno.land/r/nym-receipts001/receipts |
 | Realm path | `gno.land/r/nym-receipts001/receipts` |
 | Offline sealer | https://666crypro.github.io/receipts/ |
-| Demo video | [`docs/demo.mp4`](docs/demo.mp4) |
+| Demo video | [`docs/demo.mp4`](docs/demo.mp4) ([raw](https://raw.githubusercontent.com/666Crypro/receipts/main/docs/demo.mp4)) |
 
 ## Why
 
@@ -90,7 +90,7 @@ gnokey query vm/qeval -remote https://rpc.onyx.testnets.gno.land:443 \
 - **Rendering:** routes go through `p/nt/mux`. Every user-supplied string (topic, call, salt) passes through `p/nt/markdown/sanitize/v0` before it reaches markdown, and `$` is escaped so user text cannot render as math. Forms use `<gno-form exec>` so the whole lifecycle works from gnoweb.
 - **No coins:** the realm never holds or moves funds. Nothing to drain.
 - **Privacy:** the call never touches the chain before reveal. `Commit()` exists as a read helper for clients, but querying it sends the text to an RPC node, so the sealer page and CLI hash locally instead.
-- **Limits, honestly:** verdicts are one-account-one-vote and therefore sybil-able; they are social signal, not an oracle. Short calls with weak salts could be brute-forced, which is why reveal requires an 8+ byte salt and the tools generate 16 random characters.
+- **Limits, honestly:** verdicts are one-account-one-vote and therefore sybil-able; they are social signal, not an oracle. Short calls with weak salts could be brute-forced, which is why reveal requires an 8+ byte salt and the tools generate 16 random hex characters.
 
 ## Testnet evidence
 
@@ -99,9 +99,17 @@ Onyx testnet (`onyx-1`), deployer `g1cfcc65x9wnajpjuqm49cep9nessjl6xm737qhj` (a 
 | Step | Height | Tx hash |
 |---|---:|---|
 | Register namespace `nym-receipts001` (`r/sys/namereg/v0.Register`) | 1405760 | `twOI6+tAYGXqyUx1eQTQfksWOoRR9b0Z7xkJGTHGY48=` |
-| Submit realm (`addpkg gno.land/r/nym-receipts001/receipts`) | 1406518 | `j/U9YKzJm2bq+vM+K2WWe2Mt2mJbrXVv5OjqsdYhRF4=` |
+| Submit realm (`addpkg gno.land/r/nym-receipts001/receipts`), enabled by the approver at 10:26 AM PT Nov 25 | 1406518 | `j/U9YKzJm2bq+vM+K2WWe2Mt2mJbrXVv5OjqsdYhRF4=` |
+| Seal call #1 (`Seal`) | 1435367 | `uJA8oekgen/SKctQ79dWydzNsebxDE3WrKvxfcj9deQ=` |
+| Seal call #2 (`Seal`) | 1435368 | `Zf3MiRiIZsybizob/Mau/nBMddK1NQ0qqgD4p7nPMio=` |
+| Seal call #3, 1-day deadline, left unrevealed (`Seal`) | 1435369 | `OsJPt5NEmkLffOBtX0wbRKyR0ZxFulqr5Ezm/abTIMg=` |
+| Reveal call #1 (`Reveal`) | 1435370 | `jQsGSqSVTL4RoEnds3uA73lPnyzTdzeyy76n8tIjmRc=` |
+| Verdict *held* by judge-ada (`Verdict`) | 1435371 | `90dviVTB4J47bjAnmO9gQH1ynw3pP8ez+0qVebJHU1s=` |
+| Verdict *held* by judge-ben (`Verdict`) | 1435372 | `zVf/Qn8+7V5rV2bRw1glW7/s9VfEF44TSSh+F3juPso=` |
 
-Lifecycle transactions (seal, reveal, verdicts) are added here once the package is enabled.
+Two transactions the realm refused, on purpose, are in the log too: a reveal with the wrong text (`prediction and salt do not match the sealed commitment`) and the author voting on their own call (`authors cannot judge their own call`). Full output: [`docs/demo-logs/testnet.txt`](docs/demo-logs/testnet.txt).
+
+Call #3 has a 1-day deadline and is deliberately never revealed, so it flips to **ducked** by itself on the live app after its deadline. Judge accounts `g1xhuxxzda38ad4zv34tyrmzrkc5344t4fq2ykh9` and `g17sr5m0zx6ghu6maplkh9ekursehaqsdrqaucw7` are my own testnet-only test keys, not outside users.
 
 ## Develop
 
@@ -119,7 +127,8 @@ gnodev local .       # local node + gnoweb at http://127.0.0.1:8888
 ```
 realm/receipts/        the realm: receipts.gno (logic), render.gno (gnoweb pages), receipts_test.gno
 docs/index.html        offline sealer and receipt checker (GitHub Pages)
-docs/demo.mp4          demo video
+docs/demo.mp4          demo video (built by scripts/demo-video.py)
+docs/demo-logs/        real testnet transaction log and test output
 scripts/receipts.sh    CLI wrapper around gnokey
 ```
 
